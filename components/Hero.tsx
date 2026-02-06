@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
+import { useRouter } from 'next/navigation';
 const Hero = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
-
+    const router = useRouter();
     const slides = [
         {
             image: '/img/hero-1.jpeg',
@@ -60,7 +60,9 @@ const Hero = () => {
                         <button className="px-8 py-4 bg-[#f39c12] text-white font-semibold rounded-lg hover:bg-[#d68910] transition-all duration-300 transform hover:scale-105 shadow-lg">
                             Nos Services
                         </button>
-                        <button className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-lg border-2 border-white/50 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+                        <button className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-lg border-2 border-white/50 hover:bg-white/20 transition-all duration-300 transform hover:scale-105" onClick={() => {
+                            router.push('/contact');
+                        }}>
                             Nous Contacter
                         </button>
                     </div>

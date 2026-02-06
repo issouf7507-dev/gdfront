@@ -1,10 +1,11 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-
+import { useRouter } from "next/navigation";
 export default function FAQWithSpiral() {
     const spiralRef = useRef<HTMLDivElement | null>(null);
     const [panelOpen, setPanelOpen] = useState(false);
     const [query, setQuery] = useState("");
+    const router = useRouter();
 
     // Spiral configuration
     const [cfg, setCfg] = useState({
@@ -262,7 +263,9 @@ export default function FAQWithSpiral() {
                     <p className="text-sm text-gray-600 mb-4">
                         Une question qui n'est pas listée ? Contactez-nous pour un conseil personnalisé.
                     </p>
-                    <button className="px-8 py-3 rounded-full bg-[#f39c12] text-white font-normal text-xs transition-all duration-200 hover:bg-[#d68910] cursor-pointer">
+                    <button className="px-8 py-3 rounded-full bg-[#f39c12] text-white font-normal text-xs transition-all duration-200 hover:bg-[#d68910] cursor-pointer" onClick={() => {
+                        router.push('/contact');
+                    }}>
                         Nous contacter
                     </button>
                 </footer>

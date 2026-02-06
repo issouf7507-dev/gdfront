@@ -39,7 +39,7 @@ export default function MainLayout({
 
   return (
     <div>
-      {/* <Header /> */}
+      <Header />
       {children}
 
       <Footer

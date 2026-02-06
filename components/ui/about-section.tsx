@@ -3,7 +3,7 @@ import { TimelineContent } from "@/components/ui/timeline-animation";
 import { VerticalCutReveal } from "@/components/ui/vertical-cut-reveal";
 import { ArrowRight } from "lucide-react";
 import { useRef } from "react";
-
+import { useRouter } from "next/navigation";
 export default function AboutSection3() {
     const heroRef = useRef<HTMLDivElement>(null);
     const revealVariants = {
@@ -36,6 +36,7 @@ export default function AboutSection3() {
             opacity: 0,
         },
     };
+    const router = useRouter();
     return (
         <section className="py-8 px-4 bg-[#f9f9f9]" ref={heroRef}>
             <div className="max-w-6xl mx-auto">
@@ -51,59 +52,9 @@ export default function AboutSection3() {
                                 customVariants={revealVariants}
                                 className="text-xl font-medium text-gray-600 "
                             >
-                                Qui sommes-nous
+                                Qui sommes-nous ?
                             </TimelineContent>
                         </div>
-                        {/* <div className="flex gap-4">
-                            <TimelineContent
-                                as="a"
-                                animationNum={0}
-                                timelineRef={heroRef}
-                                customVariants={revealVariants}
-                                href="https://www.facebook.com/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="md:w-8 md:h-8 sm:w-6 w-5 sm:h-6 h-5 border border-gray-200 bg-gray-100  rounded-lg flex items-center justify-center  cursor-pointer"
-                            >
-                                <img src="https://pro-section.ui-layouts.com/facebook.svg" alt="fb" width={24} height={24} />
-                            </TimelineContent>
-                            <TimelineContent
-                                as="a"
-                                animationNum={1}
-                                timelineRef={heroRef}
-                                customVariants={revealVariants}
-                                href="https://www.instagram.com/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="md:w-8 md:h-8 sm:w-6 w-5 sm:h-6 h-5 border border-gray-200 bg-gray-100 rounded-lg flex items-center justify-center  cursor-pointer"
-                            >
-                                <img src="https://pro-section.ui-layouts.com/instagram.svg" alt="insta" width={24} height={24} />
-                            </TimelineContent>
-                            <TimelineContent
-                                as="a"
-                                animationNum={2}
-                                timelineRef={heroRef}
-                                customVariants={revealVariants}
-                                href="https://www.linkedin.com/naymur-rahman"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="md:w-8 md:h-8 sm:w-6 w-5 sm:h-6 h-5 border border-gray-200 bg-gray-100 rounded-lg flex items-center justify-center  cursor-pointer"
-                            >
-                                <img src="https://pro-section.ui-layouts.com/linkedin.svg" alt="linkedin" width={24} height={24} />
-                            </TimelineContent>
-                            <TimelineContent
-                                as="a"
-                                animationNum={3}
-                                timelineRef={heroRef}
-                                customVariants={revealVariants}
-                                href="https://www.youtube.com/naymurweb"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="md:w-8 md:h-8 sm:w-6 w-5 sm:h-6 h-5 border border-gray-200 bg-gray-100 rounded-lg flex items-center justify-center  cursor-pointer"
-                            >
-                                <img src="https://pro-section.ui-layouts.com/youtube.svg" alt="youtube" width={24} height={24} />
-                            </TimelineContent>
-                        </div> */}
                     </div>
 
                     <TimelineContent
@@ -135,7 +86,7 @@ export default function AboutSection3() {
                                 preserveAspectRatio="xMidYMid slice"
                                 width={"100%"}
                                 height={"100%"}
-                                xlinkHref="https://images.unsplash.com/photo-1718601980986-0ce75101d52d?w=1200&auto=format&fit=crop"
+                                xlinkHref="/img/qui-somme.png"
                             ></image>
                         </svg>
                     </TimelineContent>
@@ -150,13 +101,13 @@ export default function AboutSection3() {
                             className="flex gap-4"
                         >
                             <div className="flex items-center gap-2 mb-2 sm:text-base text-xs">
-                                <span className="text-[#f39c12] font-bold">+15</span>
+                                <span className="text-[#f39c12] font-bold">+25</span>
                                 <span className="text-gray-600">ans d'expérience</span>
                                 <span className="text-gray-300">|</span>
                             </div>
                             <div className="flex items-center gap-2 mb-2 sm:text-base text-xs">
-                                <span className="text-[#f39c12] font-bold">+500 </span>
-                                <span className="text-gray-600">chantiers réussis</span>
+                                <span className="text-[#f39c12] font-bold">Depuis 2010</span>
+                                <span className="text-gray-600">en France</span>
                             </div>
                         </TimelineContent>
                         <div className="lg:absolute right-0 bottom-16 flex lg:flex-col flex-row-reverse lg:gap-0 gap-4">
@@ -177,8 +128,8 @@ export default function AboutSection3() {
                                 customVariants={revealVariants}
                                 className="flex items-center gap-2 mb-2 sm:text-base text-xs"
                             >
-                                <span className="text-[#f39c12] font-bold">80%</span>
-                                <span className="text-gray-600">satisfaction client</span>
+                                <span className="text-[#f39c12] font-bold">+500</span>
+                                <span className="text-gray-600">chantiers réussis</span>
                                 <span className="text-gray-300 lg:hidden block">|</span>
                             </TimelineContent>
                         </div>
@@ -201,7 +152,7 @@ export default function AboutSection3() {
                                     delay: 3,
                                 }}
                             >
-                                L'art de protéger votre habitat, même dans l'inaccessible.
+                                Votre partenaire BTP multi-services pour l'enveloppe du bâtiment
                             </VerticalCutReveal>
                         </h1>
 
@@ -220,7 +171,7 @@ export default function AboutSection3() {
                                 className="sm:text-base text-xs"
                             >
                                 <p className="leading-relaxed text-justify">
-                                    Mon parcours a commencé avec une passion pour l'artisanat traditionnel et s'est transformé en une expertise pointue de la couverture francilienne. Chez GD Couverture, nous ne nous contentons pas de poser des tuiles ; nous concevons des solutions durables pour sécuriser votre patrimoine.
+                                    Adossée à une maison mère en France créée en 2010, GD Couverture bénéficie de plus de 25 ans d'expérience dans le bâtiment. Notre expertise couvre l'enveloppe globale du bâtiment et la maintenance technique, avec une approche multi-services qui simplifie vos projets.
                                 </p>
                             </TimelineContent>
                             <TimelineContent
@@ -231,7 +182,7 @@ export default function AboutSection3() {
                                 className="sm:text-base text-xs"
                             >
                                 <p className="leading-relaxed text-justify">
-                                    Chaque toit a ses défis, et nous nous spécialisons dans les interventions complexes grâce à nos techniques de cordistes. En alliant agilité technique et rigueur artisanale, nous apportons une réponse précise là où les méthodes classiques échouent.
+                                    Notre force réside dans la rigueur de nos standards, notre réactivité terrain et un principe simple : un interlocuteur unique pour plusieurs corps de métiers. Vous gagnez en efficacité, nous assurons la cohérence de vos travaux.
                                 </p>
                             </TimelineContent>
                         </TimelineContent>
@@ -255,7 +206,7 @@ export default function AboutSection3() {
                                 customVariants={revealVariants}
                                 className="text-gray-600 text-sm mb-8"
                             >
-                                Cordistes | Expertise en toiture
+                                BTP Multi-services | Enveloppe & Maintenance
                             </TimelineContent>
 
                             <TimelineContent
@@ -266,7 +217,7 @@ export default function AboutSection3() {
                                 className="mb-6"
                             >
                                 <p className="text-gray-900 font-medium mb-4">
-                                    Prêt à transformer votre message en résultats ?
+                                    Besoin d'un devis ou d'un conseil ?
                                 </p>
                             </TimelineContent>
 
@@ -275,11 +226,14 @@ export default function AboutSection3() {
                                 animationNum={15}
                                 timelineRef={heroRef}
                                 customVariants={revealVariants}
-                                className="px-8 py-3 rounded-full bg-[#f39c12] text-white font-normal text-xs transition-all duration-200 hover:bg-[#d68910] cursor-pointe"
+                                className="px-8 py-3 rounded-full bg-[#f39c12] text-white font-normal text-xs transition-all duration-200 hover:bg-[#d68910] cursor-pointer"
+                                onClick={() => {
+                                    router.push('/contact');
+                                }}
                             >
-                                <button className="relative">
+                                <span className="relative">
                                     Nous contacter
-                                </button>
+                                </span>
                             </TimelineContent>
                         </div>
                     </div>
