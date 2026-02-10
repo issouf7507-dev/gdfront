@@ -74,17 +74,17 @@ export default function MentionsLegalesPage() {
 
                             <div>
                                 <p className="text-sm font-semibold text-gray-500 mb-1">Capital social</p>
-                                <p className="text-gray-700">[À compléter] FCFA</p>
+                                <p className="text-gray-700">1 000 000 FCFA</p>
                             </div>
 
                             <div>
                                 <p className="text-sm font-semibold text-gray-500 mb-1">Numéro RCCM</p>
-                                <p className="text-gray-700">[À compléter]</p>
+                                <p className="text-gray-700">CI-ABJ-03-2023-B12-05878</p>
                             </div>
 
                             <div>
                                 <p className="text-sm font-semibold text-gray-500 mb-1">Numéro de compte contribuable</p>
-                                <p className="text-gray-700">[À compléter]</p>
+                                <p className="text-gray-700">1719135 S</p>
                             </div>
 
                             <div className="pt-4 border-t border-gray-200">
@@ -155,7 +155,7 @@ export default function MentionsLegalesPage() {
 
                         <div className="bg-gray-50 rounded-2xl p-8">
                             <p className="text-gray-700 leading-relaxed">
-                                Le directeur de la publication du site www.gdcouverture.ci est <strong className="text-gray-900">[Nom du Gérant]</strong>, en sa qualité de gérant de la société GD COUVERTURE CÔTE D'IVOIRE.
+                                Le directeur de la publication du site www.gdcouverture.ci est <strong className="text-gray-900">Kassa Gandega</strong>, en sa qualité de gérant de la société GD COUVERTURE CÔTE D'IVOIRE.
                             </p>
                         </div>
                     </div>

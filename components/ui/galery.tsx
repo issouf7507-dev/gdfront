@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button"
 
 const IMAGES = [
     "/img/gdcouverture-19.png",
-    "/img/gdcouverture-5.png",
-    "/img/gdcouverture-6.png",
-    "/img/gdcouverture-8.png",
+    "/img/gdcouverture-13.png",
+    "/img/gdcouverture-21.png",
+    "/img/gdcouverture-20.png",
     "/img/gdcouverture-18.png",
 ]
 const HeroDemo1 = () => {

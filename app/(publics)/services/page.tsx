@@ -34,7 +34,7 @@ const services = [
             "Isolation thermique des toitures"
         ],
         images: [
-            "/img/hear.jpg",
+            "/img/qui-somme.png",
         ],
         color: "from-orange-500 to-orange-600"
     },

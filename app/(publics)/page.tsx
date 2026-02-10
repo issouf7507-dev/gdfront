@@ -23,6 +23,14 @@ const IMAGES = [
 
 ]
 
+const IMAGES2 = [
+  "/img/gdcouverture-2.png",
+  "/img/gdcouverture-3.png",
+
+  "/img/gdcouverture-9.png",
+  "/img/gdcouverture-10.png",
+]
+
 export default function Home() {
 
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
@@ -131,7 +139,7 @@ export default function Home() {
       <section className="bg-[#f9f9f9]">
         <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-20 px-8 py-12 md:grid-cols-2">
           <GalleryGrid>
-            {IMAGES.map((imageUrl, index) => (
+            {IMAGES2.map((imageUrl, index) => (
               <GalleryGridCell index={index} key={index}>
                 <img
                   className="size-full object-cover object-center"
