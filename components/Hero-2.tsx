@@ -9,7 +9,7 @@ const Hero2 = () => {
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
                 <Image
-                    src="/img/cover11.jpg"
+                    src="/img/cover11.webp"
                     alt="Hero Background"
                     fill
                     className="object-cover animate-subtle-zoom"
