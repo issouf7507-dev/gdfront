@@ -12,11 +12,11 @@ module.exports = {
       node_args: "--max-old-space-size=896",
       env: {
         NODE_ENV: "production",
-        PORT: 3001,
+        PORT: 3002,
       },
       env_production: {
         NODE_ENV: "production",
-        PORT: 3001,
+        PORT: 3002,
       },
       merge_logs: true,
       time: true,
