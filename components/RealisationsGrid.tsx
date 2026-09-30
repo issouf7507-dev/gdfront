@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, m, useReducedMotion } from "motion/react";
 import { RealisationCard } from "@/components/RealisationCard";
 
 export type RealisationItem = {
@@ -49,10 +49,10 @@ export function RealisationsGrid({ items }: { items: RealisationItem[] }) {
         </div>
       )}
 
-      <motion.ul layout={!reduce} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <m.ul layout={!reduce} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <AnimatePresence mode="popLayout" initial={false}>
           {visible.map((r) => (
-            <motion.li
+            <m.li
               key={r.id}
               layout={!reduce}
               initial={reduce ? false : { opacity: 0, scale: 0.96 }}
@@ -61,10 +61,10 @@ export function RealisationsGrid({ items }: { items: RealisationItem[] }) {
               transition={{ duration: 0.4, ease: EASE }}
             >
               <RealisationCard {...r} />
-            </motion.li>
+            </m.li>
           ))}
         </AnimatePresence>
-      </motion.ul>
+      </m.ul>
     </>
   );
 }

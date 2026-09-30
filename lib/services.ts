@@ -26,8 +26,7 @@ export const services = [
         ],
         images: [
             "/img/qui-somme.webp",
-        ],
-        color: "from-orange-500 to-orange-600"
+        ]
     },
     {
         id: "etancheite",
@@ -45,8 +44,7 @@ export const services = [
         ],
         images: [
             "/img/gdcouverture-18.webp",
-        ],
-        color: "from-blue-500 to-blue-600"
+        ]
     },
     {
         id: "plomberie",
@@ -63,8 +61,7 @@ export const services = [
         ],
         images: [
             "/img/gdcouverture-8.webp"
-        ],
-        color: "from-cyan-500 to-cyan-600"
+        ]
     },
     {
         id: "ravalement",
@@ -81,8 +78,7 @@ export const services = [
         ],
         images: [
             "/img/gdcouverture-13.webp"
-        ],
-        color: "from-amber-500 to-amber-600"
+        ]
     },
     {
         id: "peinture",
@@ -98,8 +94,7 @@ export const services = [
         ],
         images: [
             "/img/gdcouverture-2.webp"
-        ],
-        color: "from-purple-500 to-purple-600"
+        ]
     },
     {
         id: "renovation",
@@ -118,8 +113,7 @@ export const services = [
         ],
         images: [
             "/img/gdcouverture-10.webp"
-        ],
-        color: "from-green-500 to-green-600"
+        ]
     }
 ];
 

@@ -1,5 +1,5 @@
 "use client";
-import { animate, motion, useInView, useReducedMotion, type Variants } from "motion/react";
+import { animate, m, useInView, useReducedMotion, type Variants } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { openQuoteModal } from "@/lib/quote-modal";
 
@@ -19,7 +19,7 @@ const itemVariants: Variants = {
 export function Reveal({ children, className }: { children: React.ReactNode; className?: string }) {
   const reduce = useReducedMotion();
   return (
-    <motion.div
+    <m.div
       className={className}
       variants={containerVariants}
       initial={reduce ? "visible" : "hidden"}
@@ -27,15 +27,15 @@ export function Reveal({ children, className }: { children: React.ReactNode; cla
       viewport={{ once: true, margin: "-80px" }}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 
 export function RevealItem({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <motion.div className={className} variants={itemVariants}>
+    <m.div className={className} variants={itemVariants}>
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 

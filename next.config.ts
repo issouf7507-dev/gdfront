@@ -2,8 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    // AVIF en premier : ~30% plus léger que WebP, fallback WebP automatique
-    formats: ["image/avif", "image/webp"],
+    // WebP seul : l'encodage AVIF à la volée est très lent sur un petit VPS
+    // (première visite de chaque taille d'image) pour un gain de poids modeste.
+    formats: ["image/webp"],
     // Largeurs générées pour le srcset (adaptées aux breakpoints du site)
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
