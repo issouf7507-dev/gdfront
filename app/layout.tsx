@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@/components/Analytics";
+import { EMAIL, PHONE, SITE_URL } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,7 +14,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gdcouverture.ci";
+const siteUrl = SITE_URL;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -75,10 +77,29 @@ export const metadata: Metadata = {
     // À remplir si vous utilisez Google Search Console
     // google: "votre-code-verification",
   },
+  // Canonique de l'accueil : chaque route la redéfinit dans son layout/page.
   alternates: {
-    canonical: siteUrl,
+    canonical: "/",
   },
   category: "construction",
+};
+
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "RoofingContractor",
+  name: "GD Couverture CI",
+  url: siteUrl,
+  logo: `${siteUrl}/img/logo_GDCCI.png`,
+  image: `${siteUrl}/img/logo_GDCCI.png`,
+  telephone: PHONE,
+  email: EMAIL,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Cocody Danga",
+    addressLocality: "Abidjan",
+    addressCountry: "CI",
+  },
+  areaServed: { "@type": "Country", name: "Côte d'Ivoire" },
 };
 
 export default function RootLayout({
@@ -91,7 +112,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+        />
         {children}
+        <Analytics />
       </body>
     </html>
   );

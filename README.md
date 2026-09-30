@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GD Couverture : site et administration
 
-## Getting Started
+Next.js 16 · Prisma 7 (MySQL) · Better Auth · Tailwind CSS 4
 
-First, run the development server:
+## Lancer le projet en local
+
+Prérequis : Node 24, pnpm, MySQL 8 installé sur la machine (port 3306) avec une base `gdcouv`.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install                 # installe les dépendances (et génère le client Prisma)
+cp .env.example .env         # puis compléter (voir ci-dessous)
+pnpm db:migrate              # crée les tables
+pnpm db:seed                 # compte admin + contenu de démonstration
+pnpm dev                     # http://localhost:3001
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Valeurs minimales du `.env` en local :
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+DATABASE_URL="mysql://root:<mot-de-passe>@localhost:3306/gdcouv"
+BETTER_AUTH_SECRET="…"                  # openssl rand -base64 32
+BETTER_AUTH_URL="http://localhost:3001"
+ADMIN_EMAIL="admin@gdcouverture.local"
+ADMIN_PASSWORD="…"                      # 10 caractères minimum
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Site public : http://localhost:3001
+- Administration : http://localhost:3001/admin (identifiants `ADMIN_EMAIL` / `ADMIN_PASSWORD`)
+- Base de données : `pnpm db:studio`
 
-## Learn More
+Sans `RESEND_API_KEY`, les demandes de devis sont enregistrées mais aucun email n'est envoyé.
+Sans `NEXT_PUBLIC_GA_ID`, le suivi Google Analytics / Ads est désactivé.
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts utiles
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Commande | Rôle |
+|---|---|
+| `pnpm admin:create <email> <mot-de-passe> [nom]` | Crée un compte admin ou réinitialise son mot de passe |
+| `pnpm db:migrate` | Crée/applique une migration en développement |
+| `pnpm db:deploy` | Applique les migrations en production |
+| `pnpm build` | Génère le client Prisma puis build Next.js (la base doit être joignable) |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Organisation
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `app/(publics)` : site public (accueil, services, réalisations, blog, contact)
+- `app/admin` : back-office (devis, réalisations, articles, avis, médiathèque)
+- `app/api` : formulaire de devis, authentification, API admin (médias, export CSV)
+- `lib/` : accès aux données, validation (Zod), emails, suivi (analytics), auth
+- `prisma/` : schéma et migrations
+- Images uploadées : `UPLOAD_DIR` (par défaut `storage/uploads`, hors git, **à sauvegarder**)

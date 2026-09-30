@@ -12,8 +12,10 @@ const Hero2 = () => {
                     src="/img/cover11.webp"
                     alt="Hero Background"
                     fill
+                    sizes="100vw"
                     className="object-cover animate-subtle-zoom"
                     priority
+                    fetchPriority="high"
                 />
                 {/* Dark overlay for better text readability */}
                 <div className="absolute inset-0 bg-black/20" />

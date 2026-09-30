@@ -1,7 +1,8 @@
 "use client";
 import { Footer } from "@/components/Footer";
 import Header from "@/components/Header";
-import { FacebookIcon, InstagramIcon, XIcon } from "lucide-react";
+import { CookieBanner } from "@/components/CookieBanner";
+import { FloatingContact } from "@/components/FloatingContact";
 
 import { LumaSpin } from "@/components/ui/luma-spin";
 import { useEffect, useState } from "react";
@@ -13,12 +14,6 @@ export default function MainLayout({
 }>) {
 
 
-  const socialLinksData = [
-    { label: 'Facebook', href: '#', icon: <FacebookIcon /> },
-    { label: 'Instagram', href: '#', icon: <InstagramIcon /> },
-    { label: 'Twitter (X)', href: '#', icon: <XIcon /> },
-  ];
-
   const [showLumaSpin, setShowLumaSpin] = useState(true);
 
   useEffect(() => {
@@ -28,25 +23,21 @@ export default function MainLayout({
     return () => clearTimeout(timer);
   }, []);
 
-  if (showLumaSpin) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <LumaSpin />
-      </div>
-    );
-  }
-
-
+  // Le loader recouvre la page au lieu de la remplacer : le contenu est rendu
+  // côté serveur (SEO, pages Google Ads) et les 404 renvoient bien un statut 404.
   return (
     <div>
+      {showLumaSpin && (
+        <div className="fixed inset-0 z-[200] flex justify-center items-center bg-white" aria-hidden="true">
+          <LumaSpin />
+        </div>
+      )}
       <Header />
       {children}
 
-      <Footer
-        logoSrc="https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?q=80&w=256&h=256&fit=crop&crop=entropy"
-        // onSubscribe={handleNewsletterSubscribe}
-        socialLinks={socialLinksData}
-      />
+      <Footer />
+      <FloatingContact />
+      <CookieBanner />
     </div>
   );
 }

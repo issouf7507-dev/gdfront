@@ -46,3 +46,10 @@ next-env.d.ts
 
 # fichiers lourds
 *.zip
+!.env.example
+
+# Prisma client généré
+/lib/generated/prisma
+
+# Images uploadées depuis l'admin
+/storage

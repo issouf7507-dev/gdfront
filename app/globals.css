@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -180,5 +181,14 @@
 
   .animate-fadeIn {
     animation: fadeIn 0.4s ease-out;
+  }
+}
+
+/* Défilement continu des avis (home) */
+@theme {
+  --animate-marquee: marquee 50s linear infinite;
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
   }
 }

@@ -1,12 +1,32 @@
 "use client";
+import { getAttribution, trackLead } from "@/lib/analytics";
+import { HoneypotField, honeypotValue } from "@/components/HoneypotField";
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { Menu, X, Send, CheckCircle2, User, Mail, Phone, Building2, MessageSquare } from 'lucide-react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { Menu, X, Send, CheckCircle2, User, Mail, Phone, Building2, MessageSquare, ArrowUpRight, MessageCircle } from 'lucide-react'
 import Image from 'next/image';
+import { OPEN_QUOTE_EVENT } from '@/lib/quote-modal';
+import { PHONE, PHONE_DISPLAY, whatsappUrl } from '@/lib/site';
+
+const NAV_LINKS = [
+    { href: '/', label: 'Accueil' },
+    { href: '/a-propos', label: 'À propos' },
+    { href: '/services', label: 'Services' },
+    { href: '/realisations', label: 'Réalisations' },
+    { href: '/blog', label: 'Blog' },
+    { href: '/contact', label: 'Contact' },
+]
+
+const EASE = [0.22, 1, 0.36, 1] as const
 
 const Header = () => {
     const headerRef = useRef<HTMLDivElement>(null)
     const [isScrolled, setIsScrolled] = useState(false)
+    const [isHidden, setIsHidden] = useState(false)
+    const pathname = usePathname()
+    const reduceMotion = useReducedMotion()
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
     const [formData, setFormData] = useState({
@@ -20,16 +40,22 @@ const Header = () => {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
+    // Le header se masque quand on descend et réapparaît dès qu'on remonte
     useEffect(() => {
+        let lastY = window.scrollY
         const handleScroll = () => {
             const scrollY = window.scrollY
             setIsScrolled(scrollY > 50)
+            setIsHidden(scrollY > 300 && scrollY > lastY)
+            lastY = scrollY
         }
 
         handleScroll()
-        window.addEventListener('scroll', handleScroll)
+        window.addEventListener('scroll', handleScroll, { passive: true })
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
+
+    const isActive = (href: string) => href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`)
 
     useEffect(() => {
         if (isMobileMenuOpen || isQuoteModalOpen) {
@@ -43,6 +69,12 @@ const Header = () => {
         setIsMobileMenuOpen(false)
         setIsQuoteModalOpen(true)
     }
+
+    // Permet d'ouvrir la modale de devis depuis n'importe quelle page (voir lib/quote-modal.ts)
+    useEffect(() => {
+        window.addEventListener(OPEN_QUOTE_EVENT, handleQuoteClick)
+        return () => window.removeEventListener(OPEN_QUOTE_EVENT, handleQuoteClick)
+    }, [])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({
@@ -61,10 +93,12 @@ const Header = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({ ...formData, attribution: getAttribution(), website: honeypotValue(e.currentTarget) }),
             })
 
             if (response.ok) {
+
+                trackLead(formData.service)
                 setSubmitStatus('success')
                 setFormData({
                     name: '',
@@ -91,194 +125,128 @@ const Header = () => {
 
     return (
         <>
-            {/* SVG Filter for Gooey Effect */}
-            <svg style={{ position: 'absolute', width: 0, height: 0 }}>
-                <defs>
-                    <filter id="gooey-filter">
-                        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-                        <feColorMatrix
-                            in="blur"
-                            mode="matrix"
-                            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
-                            result="gooey"
-                        />
-                    </filter>
-                </defs>
-            </svg>
-
             <header
                 ref={headerRef}
-                className={`z-50 fixed top-0 left-0 right-0 transition-all duration-500 ease-out ${isScrolled ? 'py-3 px-4 md:px-6' : 'py-4 md:py-6 px-4 md:px-6'
-                    }`}
+                className={`fixed inset-x-0 top-0 z-50 px-3 transition-[padding,transform] duration-500 ease-out md:px-6 ${isScrolled ? 'pt-3' : 'pt-4 md:pt-6'} ${isHidden && !isMobileMenuOpen ? '-translate-y-[120%]' : 'translate-y-0'}`}
             >
                 <div
-                    className={`flex items-center justify-between transition-all duration-500 ease-out ${isScrolled
-                        ? 'bg-white/95 backdrop-blur-xl border border-gray-200/50 rounded-full px-4 md:px-6 py-3 '
-                        : 'bg-transparent px-0 py-0'
+                    className={`mx-auto flex max-w-7xl items-center justify-between rounded-full border pl-4 pr-2 transition-all duration-500 ease-out md:pl-6 ${isScrolled
+                        ? 'border-neutral-200/70 bg-white/85 py-2 shadow-lg shadow-neutral-950/5 backdrop-blur-xl'
+                        : 'border-white/40 bg-white/95 py-2.5 backdrop-blur-md'
                         }`}
                 >
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center">
-                        <Image src="/img/logo_GDCCI.png" alt="GD Couverture" width={100} height={100} />
+                    <Link href="/" className="flex shrink-0 items-center" aria-label="GD Couverture — accueil">
+                        <Image src="/img/logo_GDCCI.webp" alt="GD Couverture" width={100} height={100} className={`w-auto transition-all duration-500 ${isScrolled ? 'h-9' : 'h-11'}`} priority />
                     </Link>
 
-                    {/* Desktop Navigation */}
-                    <nav className="hidden lg:flex items-center space-x-2">
-                        <Link
-                            href="/"
-                            className={`text-xs font-light px-3 py-2 rounded-full transition-all duration-200 ${isScrolled
-                                ? 'text-gray-700 hover:text-black hover:bg-gray-100'
-                                : 'text-white/80 hover:text-white hover:bg-white/10'
-                                }`}
-                        >
-                            Accueil
-                        </Link>
-                        <Link
-                            href="/a-propos"
-                            className={`text-xs font-light px-3 py-2 rounded-full transition-all duration-200 ${isScrolled
-                                ? 'text-gray-700 hover:text-black hover:bg-gray-100'
-                                : 'text-white/80 hover:text-white hover:bg-white/10'
-                                }`}
-                        >
-                            À propos
-                        </Link>
-                        <Link
-                            href="/services"
-                            className={`text-xs font-light px-3 py-2 rounded-full transition-all duration-200 ${isScrolled
-                                ? 'text-gray-700 hover:text-black hover:bg-gray-100'
-                                : 'text-white/80 hover:text-white hover:bg-white/10'
-                                }`}
-                        >
-                            Services
-                        </Link>
-                        <Link
-                            href="/contact"
-                            className={`text-xs font-light px-3 py-2 rounded-full transition-all duration-200 ${isScrolled
-                                ? 'text-gray-700 hover:text-black hover:bg-gray-100'
-                                : 'text-white/80 hover:text-white hover:bg-white/10'
-                                }`}
-                        >
-                            Contact
-                        </Link>
+                    <nav className="hidden items-center gap-1 lg:flex">
+                        {NAV_LINKS.map((link) => {
+                            const active = isActive(link.href)
+                            return (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    aria-current={active ? 'page' : undefined}
+                                    className={`relative isolate rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 ${active ? 'text-neutral-950' : 'text-neutral-500 hover:text-neutral-950'}`}
+                                >
+                                    {active && (
+                                        <motion.span
+                                            layoutId="nav-active"
+                                            className="absolute inset-0 -z-10 rounded-full bg-neutral-100"
+                                            transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 400, damping: 32 }}
+                                        />
+                                    )}
+                                    {link.label}
+                                </Link>
+                            )
+                        })}
                     </nav>
 
-                    {/* Desktop CTA Button */}
-                    <div className="hidden lg:flex">
-                        <div
-                        // id="gooey-btn"
-                        // className="relative flex items-center group"
-                        // style={{ filter: 'url(#gooey-filter)' }}
+                    <div className="hidden items-center gap-2 lg:flex">
+                        <a
+                            href={`tel:${PHONE}`}
+                            className="flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100 hover:text-neutral-950"
                         >
-
-                            <button
-                                onClick={handleQuoteClick}
-                                className="px-6 py-2 rounded-full bg-[#f39c12] text-white font-normal text-xs transition-all duration-300 hover:bg-[#d68910] cursor-pointer h-8 flex items-center z-10"
-                            >
-                                Demander un devis
-                            </button>
-                        </div>
+                            <Phone className="h-4 w-4 text-brand" />
+                            <span className="hidden xl:inline">{PHONE_DISPLAY}</span>
+                        </a>
+                        <button
+                            onClick={handleQuoteClick}
+                            className="group flex cursor-pointer items-center gap-2 rounded-full bg-neutral-950 py-2.5 pl-5 pr-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand"
+                        >
+                            Demander un devis
+                            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand transition-colors group-hover:bg-white/20">
+                                <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:rotate-45" />
+                            </span>
+                        </button>
                     </div>
 
-                    {/* Mobile Menu Button */}
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className={`lg:hidden p-2 rounded-full transition-all duration-200 ${isScrolled
-                            ? 'text-gray-700 hover:bg-gray-100'
-                            : 'text-white hover:bg-white/10'
-                            }`}
+                        aria-label={isMobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+                        aria-expanded={isMobileMenuOpen}
+                        className="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-950 text-white transition-colors hover:bg-brand lg:hidden"
                     >
-                        {isMobileMenuOpen ? (
-                            <X className="w-5 h-5" />
-                        ) : (
-                            <Menu className="w-5 h-5" />
-                        )}
+                        {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                     </button>
                 </div>
             </header>
 
-            {/* Mobile Menu Overlay */}
-            <div
-                className={`lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                    }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-            />
+            {/* Menu mobile plein écran */}
+            <AnimatePresence>
+                {isMobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="fixed inset-0 z-40 flex flex-col overflow-y-auto bg-neutral-950 px-6 pb-8 pt-28 lg:hidden"
+                    >
+                        <nav className="flex flex-1 flex-col gap-1">
+                            {NAV_LINKS.map((link, i) => (
+                                <motion.div
+                                    key={link.href}
+                                    initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5, ease: EASE, delay: 0.05 + i * 0.05 }}
+                                >
+                                    <Link
+                                        href={link.href}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className={`flex items-baseline gap-4 py-2 text-4xl font-semibold tracking-tight transition-colors ${isActive(link.href) ? 'text-brand' : 'text-white hover:text-brand'}`}
+                                    >
+                                        <span className="text-xs font-medium text-white/40">{String(i + 1).padStart(2, '0')}</span>
+                                        {link.label}
+                                    </Link>
+                                </motion.div>
+                            ))}
+                        </nav>
 
-            {/* Mobile Menu */}
-            <div
-                className={`lg:hidden fixed top-0 right-0 h-full w-[280px] bg-white z-40 transition-transform duration-300 ease-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-                    }`}
-            >
-                <div className="flex flex-col h-full">
-                    <div className="flex items-center justify-between p-6 border-b">
-                        <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 392.02 324.6"
-                            fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg"
+                        <motion.div
+                            initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, ease: EASE, delay: 0.4 }}
+                            className="mt-8 space-y-3"
                         >
-                            <path
-                                fill="#f39c12"
-                                d="M268.08,0c-27.4,0-51.41,4.43-72.07,13.26C175.36,4.43,151.35,0,123.95,0H0v324.6h123.95c27.37,0,51.38-4.58,72.07-13.7,20.69,9.12,44.7,13.7,72.07,13.7h123.95V0h-123.95ZM324.09,268.36h-47.91c-20.25,0-37.3-4.05-51.18-12.15-12.28-7.17-21.94-17.41-28.99-30.7h0s0,0,0,0c0,0,0,0,0,0h0c-7.05,13.29-16.71,23.53-28.99,30.7-13.87,8.1-30.93,12.15-51.18,12.15h-47.91V56.24h47.91c19.8,0,36.67,4.01,50.61,12.04,12.51,7.2,22.35,17.47,29.55,30.77h0s0,0,0,0c0,0,0,0,0,0h0c7.2-13.3,17.04-23.57,29.55-30.77,13.95-8.02,30.82-12.04,50.61-12.04h47.91v212.13Z"
-                            ></path>
-                        </svg>
-                        <button
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
-                    </div>
-
-                    <nav className="flex flex-col p-6 space-y-1 flex-1">
-                        <Link
-                            href="/"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="text-gray-700 hover:text-black hover:bg-gray-100 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-medium"
-                        >
-                            Accueil
-                        </Link>
-                        <Link
-                            href="/a-propos"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="text-gray-700 hover:text-black hover:bg-gray-100 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-medium"
-                        >
-                            À propos
-                        </Link>
-                        <Link
-                            href="/services"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="text-gray-700 hover:text-black hover:bg-gray-100 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-medium"
-                        >
-                            Services
-                        </Link>
-                        <Link
-                            href="/contact"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="text-gray-700 hover:text-black hover:bg-gray-100 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-medium"
-                        >
-                            Contact
-                        </Link>
-                    </nav>
-
-                    <div className="p-6 border-t">
-                        <button
-                            onClick={handleQuoteClick}
-                            className="w-full px-6 py-3 rounded-full bg-[#f39c12] text-white font-medium text-sm transition-all duration-300 hover:bg-[#d68910] cursor-pointer flex items-center justify-center gap-2"
-                        >
-                            Demander un devis
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M7 17L17 7M17 7H7M17 7V17"
-                                />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
+                            <button
+                                onClick={handleQuoteClick}
+                                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-brand px-6 py-4 text-base font-semibold text-white transition-colors hover:bg-brand-dark"
+                            >
+                                Demander un devis
+                                <ArrowUpRight className="h-5 w-5" />
+                            </button>
+                            <div className="grid grid-cols-2 gap-3">
+                                <a href={`tel:${PHONE}`} className="flex items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-3.5 text-sm font-semibold text-white">
+                                    <Phone className="h-4 w-4" /> Appeler
+                                </a>
+                                <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-3.5 text-sm font-semibold text-white">
+                                    <MessageCircle className="h-4 w-4" /> WhatsApp
+                                </a>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Quote Request Modal */}
             {isQuoteModalOpen && (
@@ -307,6 +275,7 @@ const Header = () => {
 
                         {/* Modal Content */}
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                            <HoneypotField />
                             {/* Name */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">

@@ -86,7 +86,7 @@ export default function AboutSection3() {
                                 preserveAspectRatio="xMidYMid slice"
                                 width={"100%"}
                                 height={"100%"}
-                                xlinkHref="/img/qui-somme.png"
+                                xlinkHref="/img/qui-somme.webp"
                             ></image>
                         </svg>
                     </TimelineContent>

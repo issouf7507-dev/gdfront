@@ -1,13 +1,15 @@
+import Image from "next/image"
+
 import { BentoCell, BentoGrid, ContainerScale, ContainerScroll } from "@/components/blocks/hero-gallery-scroll-animation"
 
 import { Button } from "@/components/ui/button"
 
 const IMAGES = [
-    "/img/gdcouverture-19.png",
-    "/img/gdcouverture-13.png",
-    "/img/gdcouverture-21.png",
-    "/img/gdcouverture-20.png",
-    "/img/gdcouverture-18.png",
+    "/img/gdcouverture-19.webp",
+    "/img/gdcouverture-13.webp",
+    "/img/gdcouverture-21.webp",
+    "/img/gdcouverture-20.webp",
+    "/img/gdcouverture-18.webp",
 ]
 const HeroDemo1 = () => {
     return (
@@ -16,12 +18,14 @@ const HeroDemo1 = () => {
                 {IMAGES.map((imageUrl, index) => (
                     <BentoCell
                         key={index}
-                        className="overflow-hidden rounded-xl shadow-xl"
+                        className="relative overflow-hidden rounded-xl shadow-xl"
                     >
-                        <img
-                            className="size-full object-cover object-center"
+                        <Image
+                            className="object-cover object-center"
                             src={imageUrl}
                             alt=""
+                            fill
+                            sizes="(max-width: 768px) 100vw, 75vw"
                         />
                     </BentoCell>
                 ))}
@@ -61,13 +65,14 @@ const HeroDemo2 = () => {
                 {IMAGES.filter((_, index) => index <= 3).map((imageUrl, index) => (
                     <BentoCell
                         key={index}
-                        className="overflow-hidden rounded-xl shadow-xl"
+                        className="relative overflow-hidden rounded-xl shadow-xl"
                     >
-                        <img
-                            className="size-full object-cover object-center"
-                            width="100%"
-                            height="100%"
+                        <Image
+                            className="object-cover object-center"
                             src={imageUrl}
+                            alt=""
+                            fill
+                            sizes="(max-width: 768px) 100vw, 75vw"
                         />
                     </BentoCell>
                 ))}
@@ -109,13 +114,14 @@ const HeroDemo3 = () => {
                 {IMAGES.filter((_, index) => index <= 2).map((imageUrl, index) => (
                     <BentoCell
                         key={index}
-                        className="overflow-hidden rounded-xl shadow-xl"
+                        className="relative overflow-hidden rounded-xl shadow-xl"
                     >
-                        <img
-                            className="size-full object-cover object-center"
-                            width="100%"
-                            height="100%"
+                        <Image
+                            className="object-cover object-center"
                             src={imageUrl}
+                            alt=""
+                            fill
+                            sizes="(max-width: 768px) 100vw, 75vw"
                         />
                     </BentoCell>
                 ))}

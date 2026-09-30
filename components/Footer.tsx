@@ -1,285 +1,194 @@
 "use client";
-import React, { useState, type FC, type ReactNode } from 'react';
-import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import {
-    Facebook,
-    Instagram,
-    Linkedin,
-    Mail,
-    Phone,
-    MapPin,
-    Home,
-    Droplet,
-    Wrench,
-    Building2,
-    PaintBucket,
-    Brush
-} from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useReducedMotion } from "motion/react";
+import { ArrowUp, ArrowUpRight, Facebook, Instagram, Linkedin, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Reveal, RevealItem } from "@/components/home/motion";
+import { openQuoteModal } from "@/lib/quote-modal";
+import { serviceLandings } from "@/lib/services";
+import { ADDRESS, EMAIL, MAPS_URL, PHONE, PHONE_DISPLAY, SOCIAL_LINKS, whatsappUrl } from "@/lib/site";
 
-/**
- * Props for the Footer component.
- */
-interface FooterProps extends React.HTMLAttributes<HTMLElement> {
-    /** The source URL for the company logo. */
-    logoSrc?: string;
-    /** The name of the company, displayed next to the logo. */
-    companyName?: string;
-    /** A short description of the company. */
-    description?: string;
-    /** An array of objects for generating service links. */
-    serviceLinks?: { label: string; href: string; icon?: ReactNode }[];
-    /** An array of objects for generating quick links. */
-    quickLinks?: { label: string; href: string }[];
-    /** An array of objects for generating social media links. */
-    socialLinks?: { label: string; href: string; icon: ReactNode }[];
-    /** The title for the newsletter subscription section. */
-    newsletterTitle?: string;
-    /** Async function to handle email subscription. Should return `true` for success and `false` for failure. */
-    onSubscribe?: (email: string) => Promise<boolean>;
+const COMPANY_LINKS = [
+  { label: "À propos", href: "/a-propos" },
+  { label: "Nos services", href: "/services" },
+  { label: "Réalisations", href: "/realisations" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
+];
+
+const SOCIAL_ICONS = { Facebook, Instagram, LinkedIn: Linkedin };
+
+// Pages qui se terminent déjà par <CtaSection> : pas de second appel à l'action dans le footer
+const PAGES_WITH_CTA = ["/", "/a-propos", "/services", "/realisations", "/blog", "/contact"];
+
+const CONTACT_ITEMS = [
+  { icon: Phone, label: PHONE_DISPLAY, href: `tel:${PHONE}`, external: false },
+  { icon: Mail, label: EMAIL, href: `mailto:${EMAIL}`, external: false },
+  { icon: MessageCircle, label: "WhatsApp", href: whatsappUrl(), external: true },
+  { icon: MapPin, label: ADDRESS, href: MAPS_URL, external: true },
+];
+
+// Même intertitre que les sections de la page d'accueil (point orange + capitales espacées)
+function ColumnTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="mb-5 flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-neutral-400">
+      <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+      {children}
+    </h2>
+  );
 }
 
-/**
- * Footer component for GD Couverture - BTP Multi-services
- */
-export const Footer: FC<FooterProps> = ({
-    logoSrc = "/logo.png",
-    companyName = 'GD COUVERTURE',
-    description = 'Entreprise BTP multi-services spécialisée dans l\'enveloppe globale du bâtiment et la maintenance technique. Plus de 25 ans d\'expérience au service de vos projets en Côte d\'Ivoire.',
-    serviceLinks = [
-        { label: 'Couverture', href: '/services#couverture', icon: <Home className="w-4 h-4" /> },
-        { label: 'Étanchéité', href: '/services#etancheite', icon: <Droplet className="w-4 h-4" /> },
-        { label: 'Plomberie', href: '/services#plomberie', icon: <Wrench className="w-4 h-4" /> },
-        { label: 'Ravalement', href: '/services#ravalement', icon: <Building2 className="w-4 h-4" /> },
-        { label: 'Peinture', href: '/services#peinture', icon: <PaintBucket className="w-4 h-4" /> },
-        { label: 'Rénovation', href: '/services#renovation', icon: <Brush className="w-4 h-4" /> },
-    ],
-    quickLinks = [
-        { label: 'À propos', href: '/a-propos' },
-        { label: 'Nos services', href: '/services' },
-        { label: 'Contact', href: '/contact' },
+export function Footer() {
+  const pathname = usePathname();
+  const reduceMotion = useReducedMotion();
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const linkClass = (href: string) =>
+    `text-[15px] transition-colors hover:text-brand ${isActive(href) ? "text-neutral-950" : "text-neutral-600"}`;
 
-    ],
-    socialLinks = [
-        {
-            label: 'Facebook',
-            href: 'https://facebook.com/gdcouverture',
-            icon: <Facebook className="w-5 h-5" />
-        },
-        {
-            label: 'Instagram',
-            href: 'https://instagram.com/gdcouverture',
-            icon: <Instagram className="w-5 h-5" />
-        },
-        {
-            label: 'LinkedIn',
-            href: 'https://linkedin.com/company/gdcouverture',
-            icon: <Linkedin className="w-5 h-5" />
-        },
-    ],
-    newsletterTitle = 'Restez informé',
-    onSubscribe,
-    className,
-    ...props
-}) => {
-    const [email, setEmail] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  return (
+    <footer className="bg-white px-3 pb-3 md:px-6 md:pb-6">
+      <div className="relative mx-auto max-w-[1400px] overflow-hidden rounded-[28px] bg-neutral-100 px-6 pt-14 md:rounded-[36px] md:px-14 md:pt-20">
+        {/* Appel à l'action */}
+        {!PAGES_WITH_CTA.includes(pathname) && (
+          <Reveal className="flex flex-col gap-8 border-b border-neutral-200 pb-14 md:flex-row md:items-end md:justify-between">
+            <RevealItem>
+              <p className="mb-5 flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-neutral-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+                Devis gratuit
+              </p>
+              <p className="max-w-2xl text-4xl font-medium leading-[1.08] tracking-tight text-neutral-950 md:text-6xl">
+                Parlons de votre projet<span className="text-brand">.</span>
+              </p>
+            </RevealItem>
+            <RevealItem className="shrink-0">
+              <button
+                type="button"
+                onClick={openQuoteModal}
+                className="group inline-flex h-14 w-fit cursor-pointer items-center gap-4 rounded-full bg-neutral-950 pl-7 pr-2 text-[15px] font-medium text-white transition-colors hover:bg-brand"
+              >
+                Demander un devis gratuit
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand transition-colors group-hover:bg-white/20">
+                  <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:rotate-45" />
+                </span>
+              </button>
+            </RevealItem>
+          </Reveal>
+        )}
 
-    const handleSubscribe = async (event: React.FormEvent) => {
-        event.preventDefault();
-        if (!email || !onSubscribe || isSubmitting) return;
+        {/* Colonnes */}
+        <Reveal className="grid gap-12 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr]">
+          <RevealItem>
+            <Link href="/" aria-label="GD Couverture — accueil" className="inline-block">
+              <Image src="/img/logo_GDCCI.webp" alt="GD Couverture" width={640} height={389} className="h-14 w-auto" />
+            </Link>
+            <p className="mt-5 max-w-xs text-[15px] leading-relaxed text-neutral-500">
+              Entreprise BTP multi-services spécialisée dans l&apos;enveloppe du bâtiment et la maintenance technique, depuis plus de 25 ans en Côte d&apos;Ivoire.
+            </p>
+            {SOCIAL_LINKS.length > 0 && (
+              <ul className="mt-6 flex gap-2">
+                {SOCIAL_LINKS.map((s) => {
+                  const Icon = SOCIAL_ICONS[s.label];
+                  return (
+                    <li key={s.label}>
+                      <a
+                        href={s.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={s.label}
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 text-neutral-700 transition-colors hover:border-neutral-950 hover:bg-neutral-950 hover:text-white"
+                      >
+                        <Icon className="h-4 w-4" />
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </RevealItem>
 
-        setIsSubmitting(true);
-        const success = await onSubscribe(email);
+          <RevealItem>
+            <nav aria-label="Nos métiers">
+              <ColumnTitle>Nos métiers</ColumnTitle>
+              <ul className="space-y-3">
+                {serviceLandings.map((s) => (
+                  <li key={s.slug}>
+                    <Link href={`/services/${s.slug}`} className={linkClass(`/services/${s.slug}`)}>
+                      {s.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </RevealItem>
 
-        setSubscriptionStatus(success ? 'success' : 'error');
-        setIsSubmitting(false);
+          <RevealItem>
+            <nav aria-label="Entreprise">
+              <ColumnTitle>Entreprise</ColumnTitle>
+              <ul className="space-y-3">
+                {COMPANY_LINKS.map((l) => (
+                  <li key={l.href}>
+                    <Link href={l.href} className={linkClass(l.href)}>
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </RevealItem>
 
-        if (success) {
-            setEmail('');
-        }
+          <RevealItem>
+            <ColumnTitle>Contact</ColumnTitle>
+            <ul className="space-y-3">
+              {CONTACT_ITEMS.map(({ icon: Icon, label, href, external }) => (
+                <li key={href}>
+                  <a
+                    href={href}
+                    {...(external && { target: "_blank", rel: "noopener noreferrer" })}
+                    className="group flex items-start gap-3 text-[15px] text-neutral-600 transition-colors hover:text-brand"
+                  >
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-neutral-950 transition-colors group-hover:bg-brand group-hover:text-white">
+                      <Icon className="h-3.5 w-3.5" />
+                    </span>
+                    <span className="pt-1">{label}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </RevealItem>
+        </Reveal>
 
-        // Reset the status message after 3 seconds
-        setTimeout(() => {
-            setSubscriptionStatus('idle');
-        }, 3000);
-    };
+        {/* Barre du bas */}
+        <div className="flex flex-col gap-4 border-t border-neutral-200 py-6 text-sm text-neutral-500 md:flex-row md:items-center md:justify-between">
+          <p>© {new Date().getFullYear()} GD Couverture. Tous droits réservés.</p>
+          <div className="flex items-center gap-6">
+            <Link href="/mentions-legales" className="transition-colors hover:text-brand">
+              Mentions légales
+            </Link>
+            <Link href="/confidentialite" className="transition-colors hover:text-brand">
+              Confidentialité
+            </Link>
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" })}
+              aria-label="Retour en haut de la page"
+              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-neutral-950 text-white transition-colors hover:bg-brand"
+            >
+              <ArrowUp className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
 
-    return (
-        <footer className={cn('bg-gray-900 text-white', className)} {...props}>
-            <div className="container mx-auto grid grid-cols-1 gap-8 px-8 py-16 md:grid-cols-2 lg:grid-cols-5 lg:gap-12">
-
-                {/* Company Info - Takes 2 columns on large screens */}
-                <div className="lg:col-span-2 flex flex-col items-start gap-4">
-                    <div className="flex items-center gap-3">
-
-                        <div>
-                            {/* <span className="text-2xl font-bold text-white">{companyName}</span> */}
-                            {/* <p className="text-xs text-[#f39c12] font-semibold">BTP Multi-services</p> */}
-                            <Link href="/" className="flex items-center">
-                                <Image src="/img/logo_GDCCI.png" alt="GD Couverture" width={100} height={100} />
-                            </Link>
-                        </div>
-                    </div>
-                    <p className="text-sm text-gray-400 leading-relaxed max-w-md">
-                        {description}
-                    </p>
-
-                    {/* Contact Info */}
-                    <div className="space-y-3 mt-4">
-                        <a
-                            href="tel:+2250713488488"
-                            className="flex items-center gap-3 text-sm text-gray-300 hover:text-[#f39c12] transition-colors group"
-                        >
-                            <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center  transition-colors">
-                                <Phone className="w-4 h-4" />
-                            </div>
-                            <span>+225 07 13 48 84 88</span>
-                        </a>
-                        <a
-                            href="mailto:contact@gdcouverture.ci" target="_blank" rel="noopener noreferrer"
-                            className="flex items-center gap-3 text-sm text-gray-300 hover:text-[#f39c12] transition-colors group"
-                        >
-                            <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center  transition-colors">
-                                <Mail className="w-4 h-4" />
-                            </div>
-                            <span>contact@gdcouverture.ci</span>
-                        </a>
-                        <div className="flex items-center gap-3 text-sm text-gray-300">
-                            <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <MapPin className="w-4 h-4" />
-                            </div>
-                            <span> <a href="https://maps.google.com/?q=Abidjan,Cocody" target="_blank" rel="noopener noreferrer">Cocody Danga, Abidjan Côte d'Ivoire</a></span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Services */}
-                <div>
-                    <h3 className="mb-4 text-base font-bold text-white">Nos Services</h3>
-                    <ul className="space-y-2">
-                        {serviceLinks.map((link) => (
-                            <li key={link.label}>
-                                <a
-                                    href={link.href}
-                                    className="flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-[#f39c12] group"
-                                >
-                                    <span className="text-gray-600 group-hover:text-[#f39c12] transition-colors">
-                                        {link.icon}
-                                    </span>
-                                    <span>{link.label}</span>
-                                </a>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                {/* Quick Links */}
-                <div>
-                    <h3 className="mb-4 text-base font-bold text-white">Liens Rapides</h3>
-                    <ul className="space-y-2">
-                        {quickLinks.map((link) => (
-                            <li key={link.label}>
-                                <a
-                                    href={link.href}
-                                    className="text-sm text-gray-400 transition-colors hover:text-[#f39c12] inline-block"
-                                >
-                                    {link.label}
-                                </a>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                {/* Newsletter */}
-                <div>
-                    <h3 className="mb-4 text-base font-bold text-white">{newsletterTitle}</h3>
-                    <p className="text-sm text-gray-400 mb-4">
-                        Recevez nos actualités et conseils
-                    </p>
-                    <form onSubmit={handleSubscribe} className="relative w-full">
-                        <div className="relative">
-                            <Input
-                                type="email"
-                                placeholder="Votre email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                disabled={isSubmitting || subscriptionStatus !== 'idle'}
-                                required
-                                aria-label="Email pour la newsletter"
-                                className="pr-24 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus:border-[#f39c12]"
-                            />
-                            <Button
-                                type="submit"
-                                disabled={isSubmitting || subscriptionStatus !== 'idle'}
-                                className="absolute right-0 top-0 h-full rounded-l-none px-3 bg-[#f39c12] hover:bg-[#d68910] text-white border-none text-xs"
-                            >
-                                {isSubmitting ? 'Envoi...' : 'OK'}
-                            </Button>
-                        </div>
-                        {/* Status Overlay */}
-                        {(subscriptionStatus === 'success' || subscriptionStatus === 'error') && (
-                            <div
-                                key={subscriptionStatus}
-                                className="animate-in fade-in absolute inset-0 flex items-center justify-center rounded-lg bg-gray-800/95 text-center backdrop-blur-sm"
-                            >
-                                {subscriptionStatus === 'success' ? (
-                                    <span className="font-semibold text-[#f39c12]">Inscrit ! 🎉</span>
-                                ) : (
-                                    <span className="font-semibold text-red-500">Erreur. Réessayez.</span>
-                                )}
-                            </div>
-                        )}
-                    </form>
-
-                    {/* Social Links */}
-                    <div className="mt-6">
-                        <h4 className="text-sm font-semibold text-gray-300 mb-3">Suivez-nous</h4>
-                        <div className="flex gap-3">
-                            {socialLinks.map((link) => (
-                                <a
-                                    key={link.label}
-                                    href={link.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    aria-label={link.label}
-                                    className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:bg-[#f39c12] hover:text-white transition-all duration-300"
-                                >
-                                    {link.icon}
-                                </a>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Bottom Bar */}
-            <div className="border-t border-gray-800">
-                <div className="container mx-auto px-8 py-6">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <p className="text-sm text-gray-500 text-center md:text-left">
-                            © {new Date().getFullYear()} GD Couverture. Tous droits réservés.
-                        </p>
-                        <div className="flex gap-6 text-sm text-gray-500">
-                            <a href="/mentions-legales" className="hover:text-[#f39c12] transition-colors">
-                                Mentions légales
-                            </a>
-                            <a href="/confidentialite" className="hover:text-[#f39c12] transition-colors">
-                                Confidentialité
-                            </a>
-                            {/* <a href="/cgv" className="hover:text-[#f39c12] transition-colors">
-                                CGV
-                            </a> */}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
-    );
-};
+        {/* Signature */}
+        <p
+          aria-hidden="true"
+          className="pointer-events-none -mb-[0.22em] select-none whitespace-nowrap text-center text-[15.5vw] font-medium leading-none tracking-tighter text-neutral-950/[0.06] min-[1400px]:text-[216px]"
+        >
+          GD Couverture
+        </p>
+      </div>
+    </footer>
+  );
+}
 
 export default Footer;
